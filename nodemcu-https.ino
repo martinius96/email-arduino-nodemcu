@@ -29,28 +29,12 @@ void setup() {
 }
 
 void loop() {
-  // Use WiFiClientSecure class to create TLS connection
   WiFiClientSecure client;
-  Serial.print("connecting to ");
-  Serial.println(host);
-  if (!client.connect(host, httpsPort)) {
-    Serial.println("connection failed");
-    return;
+  if (client.verify(fingerprint, host)) {} else {}
+  if (client.connect(host, httpsPort)) {
+    String url = "/email.php"; 
+    client.print(String("GET ") + url + " HTTP/1.1\r\n" + "Host: " + host + "\r\n" + "User-Agent: NodeMCU\r\n" + "Connection: close\r\n\r\n");
+  }else if (!client.connect(host, httpsPort)) {
+    Serial.println("Connection unsucesssful");
   }
-
-  if (client.verify(fingerprint, host)) {
-    Serial.println("certificate matches");
-  } else {
-    Serial.println("certificate doesn't match");
-  }
-
-  String url = "/email.php";
-  Serial.print("requesting URL: ");
-  Serial.println(url);
-
-  client.print(String("GET ") + url + " HTTP/1.1\r\n" +
-               "Host: " + host + "\r\n" +
-               "User-Agent: BuildFailureDetectorESP8266\r\n" +
-               "Connection: close\r\n\r\n");
-               delay(10000);
 }
